@@ -11,7 +11,7 @@ interface Props {
 const QuantumCircuitOutputBar: React.FC<Props> = ({ data }) => {
     const d3Container = useRef(null);
 
-    const svgWidth = 400, svgHeight = 200;
+    const svgWidth = 500, svgHeight = 300;
     useEffect(() => {
       if (data && d3Container.current) {
         const svg = d3.select(d3Container.current);

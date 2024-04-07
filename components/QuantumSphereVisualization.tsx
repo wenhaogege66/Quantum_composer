@@ -1,11 +1,10 @@
-// QuantumCircuitOutputBlochSphere.tsx
+// QuantumSphereVisualization.tsx
 'use client';
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { QuantumState } from '@/utils/types';
-import { error } from 'console';
 
 interface Props {
   data: QuantumState[];
@@ -124,11 +123,11 @@ const QuantumSphereVisualization: React.FC<Props> = ({data}) => {
   useEffect(() => {
     if(mountRef.current){
       let current = mountRef.current;
-      // const width = mountRef.current.clientWidth;
-      // const height = mountRef.current.clientHeight;
+      const width = mountRef.current.clientWidth;
+      const height = mountRef.current.clientHeight;
       // 场景、相机、渲染器设置
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
       // camera.position.z = 4;
 
       // const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
@@ -138,7 +137,7 @@ const QuantumSphereVisualization: React.FC<Props> = ({data}) => {
       camera.lookAt(scene.position); // 确保相机朝向场景中心
 
       const renderer = new THREE.WebGLRenderer({antialias: true});
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(width, height);
       renderer.setClearColor(0xffffff); // 设置背景色为白色
       mountRef.current.appendChild(renderer.domElement);
 
@@ -214,7 +213,7 @@ const QuantumSphereVisualization: React.FC<Props> = ({data}) => {
 
   return (
     <>
-      <div ref={mountRef} />
+      <div ref={mountRef} style={{height:"100%", width: "100%", maxHeight: "500px", maxWidth:"500px", aspectRatio: 1}}/>
     </>);
 };
 
