@@ -1,3 +1,5 @@
+'use client';
+
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
 import Divider from '@mui/material/Divider';
@@ -12,6 +14,8 @@ import Code from "@/components/Code";
 import QuantumCircuitOutputBar from "@/components/QuantumCircuitOutputBar";
 import QuantumSphereVisualization from "@/components/QuantumSphereVisualization";
 import LoginMenu from '@/components/LoginMenu';
+
+import React, {useState} from 'react';
 
 const graphStyle = {
   width: "100%",
@@ -56,31 +60,57 @@ const circuitStyle = {
 
 const codeStyle = {
   width: "100%",
-  height: "100%",
+  height: "300px",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
+  alignItems: "left",
   justifyContent: "center",
   borderStyle: "solid",
   borderColor: "lightgrey",
   borderWidth: "1px",
   overflow: "auto",
   flex: 1,
+  fontsize: "8px",
 }
 
-const quantumStates = [
-  {state: '0011', probability: 0.5, amplitude: {real: 0.5 ,imaginary: 0.5}},
-  {state: '0111', probability: 0.5, amplitude: {real: 0.5 ,imaginary: 0.5}},
-  {state: '1110', probability: 0.5, amplitude: {real: 0.5 ,imaginary: 0.5}},
-  {state: '1101', probability: 0.5, amplitude: {real: 0.5 ,imaginary: 0.5}},
-  {state: '1111', probability: 0.5, amplitude: {real: 0.5 ,imaginary: 0.5}},
-  {state: '0101', probability: 0.1, amplitude: {real: -0.1 ,imaginary: -0.1}},
-  {state: '0001', probability: 0.5, amplitude: {real: 0.5 ,imaginary: 0.5}},
-  {state: '1111', probability: 0.5, amplitude: {real: 0.2 ,imaginary: 0.8}}
-];
+
+interface GateInfo {
+  gateType: string;
+  qubitIndex: number;
+  gateIndex: number;
+}
 
 export default function HomePage() {
   const data = [{ state: "19", probability: 0.1},{ state: "1215", probability: 0.4 },{ state: "00", probability: 0.5 }, { state: "10", probability: 0.5 }];
+
+  const [qubits, setQubits] = useState(1);
+  const [gates, setGates] = useState<GateInfo[]>([]);
+
+  const addQubit = () => {
+    setQubits(qubits + 1);
+  };
+
+  const addGate = (gateType: string, qubitIndex: number) => {
+    if (qubitIndex >= qubits) {
+      console.log(`Quantum bit ${qubitIndex} does not exist.`);
+      return;
+    }
+
+    let gateIndex: number = 0;
+    const existingGates = gates.filter(gate => gate.qubitIndex === qubitIndex);
+    if (existingGates === undefined) {
+      gateIndex = 1;
+    } else {
+      gateIndex = existingGates.length + 1;
+    }
+
+    setGates(currentGates => {
+      return [...currentGates, { gateType, qubitIndex, gateIndex }];
+    });
+
+  };
+
+
   return (
     <>
       <CssBaseline />
@@ -101,23 +131,23 @@ export default function HomePage() {
         <div style={{ width:"100%", height: "300px", display: 'flex', flexDirection: "row"}}>
           <div style={kitStyle}>
             {/* 元件面板，可以放置一些可拖拽的量子门元件 */}
-            <ComponentPanel />
+            <ComponentPanel qubits={qubits} onAddGate={addGate} />
           </div>
           <div style={circuitStyle}>
             {/* 量子电路容器 */}
-            <QuantumCircuit />
+            <QuantumCircuit qubits={qubits} addQubit={addQubit} gates={gates} />
           </div>
           <div style={codeStyle}>
             {/* 代码生成区，可以显示生成的 Qiskit 代码 */}
-            <Code />
+            <Code qubits={qubits} gates={gates} />
           </div>
         </div>
         <div style={{width: "100%", height: "100%", display: 'flex', flexDirection: "row"}}>
           <div style={graphStyle}>
-            <QuantumCircuitOutputBar data={data}/>
+            <QuantumCircuitOutputBar qubits={qubits} gates={gates} />
           </div>
           <div style={graphStyle}>
-            <QuantumSphereVisualization data={quantumStates}/>
+            <QuantumSphereVisualization qubits={qubits} gates={gates} />
           </div>
         </div>
       </div>

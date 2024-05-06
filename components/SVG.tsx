@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
+import { ListItem, ListItemText, Button, Dialog, DialogActions,DialogContent,DialogContentText,TextField, Typography } from '@mui/material';
 import HG from '../img/Hadamard_Gate.svg';
 
 interface ISvgImage {
@@ -11,37 +12,19 @@ interface ISvgImage {
 
 interface DraggableSVGProps {
     svgImage: ISvgImage;
-    onDrop: (droppedGate: string) => void;
+    onGateSelect: () => void;
 }
 
-const DraggableSVG: React.FC<DraggableSVGProps> = ({ svgImage, onDrop }) => {
-    const gateRef = useRef<HTMLDivElement>(null);
-
-    const handleDragStart = (event: React.DragEvent) => {
-        event.dataTransfer.setData('text', svgImage.src); // 设置拖动数据
-    };
-
-    const handleDragOver = (event: React.DragEvent) => {
-        event.preventDefault(); // 启用拖放
-    };
-
-    const handleDrop = (event: React.DragEvent) => {
-        event.preventDefault();
-        if (gateRef.current) {
-            onDrop(event.dataTransfer.getData('text')); // 调用父组件的 drop 处理函数
-        }
-    };
+const DraggableSVG: React.FC<DraggableSVGProps> = ({ svgImage, onGateSelect }) => {
 
     return (
-        <div
-            ref={gateRef}
-            draggable
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
+        <button
+            onClick={onGateSelect}
             style={{
                 cursor: 'pointer',
                 margin: '10px',
+                padding: 0,
+                border: 'none',
                 width: '50px',
                 height: '50px',
                 display: 'flex',
@@ -51,26 +34,80 @@ const DraggableSVG: React.FC<DraggableSVGProps> = ({ svgImage, onDrop }) => {
             }}
         >
             <img src={svgImage.src} alt={svgImage.alt} style={{ maxWidth: '100%', maxHeight: '100%' }} />
-        </div>
+        </button>
     );
 };
 
-const ComponentPanel = () => {
-    const handleDrop = (droppedGate: string) => {
-        console.log('Dropped gate:', droppedGate);
-        // 这里可以添加逻辑，比如更新量子电路的状态以添加门
-    };
+const ComponentPanel = ({ qubits, onAddGate }) => {
 
     const hadamardSvg: ISvgImage = {
         src: HG.src,
         alt: 'Hadamard Gate',
-        // 可以在这里添加样式
     };
+
+    const [open, setOpen] = useState(false);
+    const [selectedQubit, setSelectedQubit] = useState('');
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleQubitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedQubit(event.target.value);
+    };
+
+    const handleAddGate = () => {
+        if (selectedQubit !== '') {
+            onAddGate('H', parseInt(selectedQubit, 10));
+        }
+        handleClose();
+    };
+
+    const qubitOptions = Array.from({ length: qubits }, (_, index) => (
+        <ListItem
+            key={index}
+            button
+            value={String(index)}
+            selected={selectedQubit === String(index)}
+            onClick={() => setSelectedQubit(String(index))}
+        >
+            <ListItemText primary={`Qubit ${index}`} />
+        </ListItem>
+    ));
+
 
     return (
         <div>
-            <DraggableSVG svgImage={hadamardSvg} onDrop={handleDrop} />
-            {/* 其他元件 */}
+            <DraggableSVG svgImage={hadamardSvg} onGateSelect={handleOpen} />
+            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogContent>
+                    <DialogContentText id="form-dialog-title">
+                        选择要添加 Hadamard 门的量子比特：
+                    </DialogContentText>
+                    <TextField
+                        select
+                        label="量子比特"
+                        value={selectedQubit}
+                        onChange={handleQubitChange}
+                        helperText="请选择量子比特编号"
+                        margin="normal"
+                    >
+                        {qubitOptions}
+                    </TextField>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        取消
+                    </Button>
+                    <Button onClick={handleAddGate} color="primary">
+                        添加
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };

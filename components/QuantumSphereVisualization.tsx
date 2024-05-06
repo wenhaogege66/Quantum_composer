@@ -4,10 +4,23 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { QuantumState } from '@/utils/types';
+import {ComplexNumber} from "@/utils/types";
+
+interface QuantumStateVector {
+  state: string;
+  probability: number;
+  amplitude?: ComplexNumber;
+}
+
+interface GateInfo {
+  gateType: string;
+  qubitIndex: number;
+  gateIndex: number;
+}
 
 interface Props {
-  data: QuantumState[];
+  qubits: number;
+  gates: GateInfo[];
 }
 
 // 创造文字纹理和精灵的函数
@@ -91,7 +104,7 @@ function createLatitudeRing(bitNumber:number, scene: THREE.Scene) {
 }
 
 // 计算量子态的位置和颜色
-function calculatePositionAndColor(qState: QuantumState) {
+function calculatePositionAndColor(qState: QuantumStateVector) {
   // 计算相位差phi
   const phi = Math.atan2(qState.amplitude.imaginary, qState.amplitude.real);
   // state
@@ -117,7 +130,7 @@ function calculatePositionAndColor(qState: QuantumState) {
   };
 }
 
-const QuantumSphereVisualization: React.FC<Props> = ({data}) => {
+const QuantumSphereVisualization: React.FC<Props> = ({ qubits, gates }) => {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -160,7 +173,50 @@ const QuantumSphereVisualization: React.FC<Props> = ({data}) => {
       circle.renderOrder = 0; // 确保它在球体上面
       scene.add(circle);
 
-      createLatitudeRing(data[0].state.length, scene);
+      createLatitudeRing(qubits, scene);
+
+      // 确定每个量子比特上H门的数量
+      const hGateCounts = new Array(qubits).fill(0);
+      gates.forEach(gate => {
+        if (gate.gateType === 'H') {
+          hGateCounts[gate.qubitIndex] += 1;
+        }
+      });
+
+      const d: QuantumStateVector[] = [];
+      for (let i = 0; i < Math.pow(2, qubits); i++) {
+        const state = i.toString(2).padStart(qubits, '0');
+        let probability = 1.0; // 初始概率
+
+        // 调整每个量子比特上H门数量为奇数的概率
+        for (let qIndex = 0; qIndex < qubits; qIndex++) {
+          if (hGateCounts[qIndex] % 2 === 0 && state[qubits-qIndex-1] === '1') {
+            probability = 0;
+            break;
+          } else if (hGateCounts[qIndex] % 2 === 0 && state[qubits-qIndex-1] === '0') {
+
+          } else if (hGateCounts[qIndex] % 2 === 1) {
+            probability = probability / 2
+          }
+        }
+        const s: QuantumStateVector = {
+          state: state,
+          probability: probability,
+          amplitude: {
+            real: 0,
+            imaginary: 0,
+          }
+        }
+
+        d.push(s);
+      }
+
+      const data: QuantumStateVector[] = []
+          d.map( dd => {
+          if (dd.probability !== 0) data.push(dd);
+      } )
+
+
       // 绘制量子态
       data.forEach((quantumState, index) => {
         const {position, color} = calculatePositionAndColor(quantumState)
@@ -209,7 +265,7 @@ const QuantumSphereVisualization: React.FC<Props> = ({data}) => {
         current && current.removeChild(renderer.domElement);
       };
     }
-  }, [data]);
+  }, [qubits, gates]);
 
   return (
     <>

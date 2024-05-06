@@ -1,21 +1,62 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
-const quantumCode = `
-from qiskit import QuantumCircuit
-qc1 = QuantumCircuit(3)
-qc2 = QuantumCircuit(2)
-print("First Quantum Circuit:")
-print(qc1)
-print("\nSecond Quantum Circuit:")
-print(qc2)
-`;
+interface GateInfo {
+    gateType: string;
+    qubitIndex: number;
+    gateIndex: number;
+}
 
-const Code: React.FC = () => {
+interface Props {
+    qubits: number;
+    gates: GateInfo[];
+}
+
+
+const Code: React.FC<Props> = ({qubits, gates}) => {
+
+    const [code, setCode] = useState<string>('');
+
+    useEffect(() => {
+        let Code: string =
+            `
+from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+from numpy import pi
+        
+qreg_q = QuantumRegister(`;
+
+        Code += qubits.toString();
+
+        Code += `, 'q')
+
+circuit = QuantumCircuit(qreg_q)`;
+
+        const hGateCounts = new Array(qubits).fill(0);
+        gates.forEach(gate => {
+            if (gate.gateType === 'H') {
+                hGateCounts[gate.qubitIndex] += 1;
+            }
+        });
+        hGateCounts.forEach( (_, i) => {
+            if (hGateCounts[i] > 0) {
+                for (let j = 0; j < hGateCounts[i]; j++) {
+                    Code += (`
+
+circuit.h(qreg_q[` + i +`])`);
+                }
+
+            }
+        });
+
+
+        setCode(Code);
+    }, [qubits, gates]);
+
+
     return (
         <div>
-            <code>
-                {quantumCode}
-            </code>
+            <pre>
+                {code}
+            </pre>
         </div>
     )
 }
