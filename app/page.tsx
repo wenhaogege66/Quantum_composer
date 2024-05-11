@@ -81,13 +81,24 @@ interface GateInfo {
 }
 
 export default function HomePage() {
-  const data = [{ state: "19", probability: 0.1},{ state: "1215", probability: 0.4 },{ state: "00", probability: 0.5 }, { state: "10", probability: 0.5 }];
 
   const [qubits, setQubits] = useState(1);
   const [gates, setGates] = useState<GateInfo[]>([]);
 
   const addQubit = () => {
     setQubits(qubits + 1);
+  };
+
+  const deleteQubit = () => {
+    if (qubits <= 1) {
+      return;
+    }
+
+    const updatedGates = gates.filter(gate => gate.qubitIndex < qubits-1);
+    setGates(updatedGates);
+
+    setQubits(qubits - 1);
+
   };
 
   const addGate = (gateType: string, qubitIndex: number) => {
@@ -108,6 +119,20 @@ export default function HomePage() {
       return [...currentGates, { gateType, qubitIndex, gateIndex }];
     });
 
+  };
+
+  const deleteGate = (gateType: string, qubitIndex: number, gateIndex: number) => {
+    const updatedGates = gates.map(gate => {
+      // 如果是要删除的门，或者门索引大于要删除的门，则返回 undefined（这将从数组中过滤掉）
+      if (gate.qubitIndex === qubitIndex && gate.gateIndex >= gateIndex) {
+        return gate.gateIndex === gateIndex ? null : { ...gate, gateIndex: gate.gateIndex - 1 };
+      }
+      // 其他门保持不变
+      return gate;
+    });
+
+    // 使用 filter 移除所有标记为 null 的门，并更新状态
+    setGates(updatedGates.filter(gate => gate !== null));
   };
 
 
@@ -135,7 +160,7 @@ export default function HomePage() {
           </div>
           <div style={circuitStyle}>
             {/* 量子电路容器 */}
-            <QuantumCircuit qubits={qubits} addQubit={addQubit} gates={gates} />
+            <QuantumCircuit qubits={qubits} addQubit={addQubit} deleteQubit={deleteQubit} gates={gates} deleteGate={deleteGate} />
           </div>
           <div style={codeStyle}>
             {/* 代码生成区，可以显示生成的 Qiskit 代码 */}

@@ -114,13 +114,13 @@ function calculatePositionAndColor(qState: QuantumStateVector) {
   const combinations = generateCombinations(state.length, numberOfOne);
   const lat = (Math.PI / state.length) * numberOfOne
   const lon = (2 * Math.PI / combinations.length) * combinations.indexOf(state);
-  console.log("lat:" + lat + "lon:" + lon);
+  // console.log("lat:" + lat + "lon:" + lon);
 
   const z = Math.sin(lat) * Math.cos(lon);
   const x = Math.sin(lat) * Math.sin(lon);
   const y = -Math.cos(lat);
 
-  console.log("x:" + x, "y:" + y, "z: " + z)
+  // console.log("x:" + x, "y:" + y, "z: " + z)
   // 根据phi计算颜色，假设phi范围[-π, π]映射到[0, 360]度颜色环
   const hue = ((phi + Math.PI) / (2 * Math.PI)) * 360; // 转换phi到0-360度
   const color = `hsl(${hue}, 100%, 50%)`; // 使用HSL色彩空间，饱和度和亮度固定，色相根据phi变化
