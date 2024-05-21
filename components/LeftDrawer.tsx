@@ -6,8 +6,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import FlipCameraAndroidIcon from '@mui/icons-material/FlipCameraAndroid';
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
+import React, { useState } from "react";
 
 export default function LeftDrawer() {
+  const [open, setOpen] = useState(true);
   const drawerWidth = 60;
   const icon = (index: number) => {
     switch(index) {
@@ -31,6 +33,7 @@ export default function LeftDrawer() {
       }}
       variant="permanent"
       anchor="left"
+      open={open}
     >
       <List>
         {['File', 'Job', 'Doc'].map((text, index) => (

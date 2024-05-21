@@ -10,14 +10,15 @@ export const metadata: Metadata = {
 };
 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
- // or `v1X-appRouter` if you are using Next.js v1X
+import PrimaryAppBar from "@/components/AppBar";
 
  export default function RootLayout(props:any) {
    return (
      <html lang="en">
        <body>
         <AppRouterCacheProvider>
-           {props.children}
+          <PrimaryAppBar/>
+            {props.children}
         </AppRouterCacheProvider>
        </body>
      </html>

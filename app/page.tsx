@@ -16,6 +16,7 @@ import QuantumSphereVisualization from "@/components/QuantumSphereVisualization"
 import LoginMenu from '@/components/LoginMenu';
 
 import React, {useState} from 'react';
+import { AppBar } from '@mui/material';
 
 const graphStyle = {
   width: "100%",
@@ -121,37 +122,28 @@ export default function HomePage() {
 
   };
 
+  const null_gate = {gateType:"delete",qubitIndex:-1,gateIndex:-1};
   const deleteGate = (gateType: string, qubitIndex: number, gateIndex: number) => {
     const updatedGates = gates.map(gate => {
       // 如果是要删除的门，或者门索引大于要删除的门，则返回 undefined（这将从数组中过滤掉）
       if (gate.qubitIndex === qubitIndex && gate.gateIndex >= gateIndex) {
-        return gate.gateIndex === gateIndex ? null : { ...gate, gateIndex: gate.gateIndex - 1 };
+        return gate.gateIndex === gateIndex ? null_gate : { ...gate, gateIndex: gate.gateIndex - 1 };
       }
       // 其他门保持不变
       return gate;
     });
 
     // 使用 filter 移除所有标记为 null 的门，并更新状态
-    setGates(updatedGates.filter(gate => gate !== null));
+    setGates(updatedGates.filter(gate => gate !== null_gate));
   };
 
 
   return (
     <>
       <CssBaseline />
-      <LeftDrawer />
-      <div style={{display: 'flex',flexDirection: "column",  alignItems: "center", justifyContent: "center", height: "100%", marginLeft: 60}}>
+      {/* <LeftDrawer /> */}
+      <div style={{display: 'flex',flexDirection: "column",  alignItems: "center", justifyContent: "center", height: "100%"}}>
         <div style={{ width:"100%", borderStyle: "solid", borderColor: "lightgrey", borderWidth: "1px"}}>
-          <Toolbar>
-            <TextField id="name" variant="standard" defaultValue={"Untitled circuit"} style={{marginRight: 15}}/>
-            <Divider orientation="vertical" variant="middle" flexItem style={{borderRightWidth:"2px"}}/>
-            <FileMenu />
-            <EditMenu />
-            <ViewMenu />
-            <div style={{marginLeft: "auto"}}>
-              <LoginMenu />
-            </div>
-          </Toolbar>
         </div>
         <div style={{ width:"100%", height: "300px", display: 'flex', flexDirection: "row"}}>
           <div style={kitStyle}>
