@@ -21,6 +21,8 @@ interface GateInfo {
 interface Props {
   qubits: number;
   gates: GateInfo[];
+  parentWidth: number;
+  parentHeight: number;
 }
 
 // 创造文字纹理和精灵的函数
@@ -87,7 +89,7 @@ function createLatitudeRing(bitNumber:number, scene: THREE.Scene) {
       continue; // 赤道不需要创建
     }
     // 圆环的参数
-    const radius = Math.cos(lat); // 圆环的半径，基于纬度来计算
+    const radius = Math.sin(lat); // 圆环的半径，基于纬度来计算
     const tubeRadius = 0.005; // 圆环的管道半径，相对较细
     const radialSegments = 36; // 圆环的分段数，可以根据需要调整以平滑圆环
     const tubularSegments = 100; // 圆环管道的分段数
@@ -112,7 +114,7 @@ function calculatePositionAndColor(qState: QuantumStateVector) {
   
   const numberOfOne = (state.split('1').length - 1)
   const combinations = generateCombinations(state.length, numberOfOne);
-  const lat = (Math.PI / state.length) * numberOfOne
+  const lat = Math.PI - (Math.PI / state.length) * numberOfOne
   const lon = (2 * Math.PI / combinations.length) * combinations.indexOf(state);
   // console.log("lat:" + lat + "lon:" + lon);
 
@@ -122,7 +124,7 @@ function calculatePositionAndColor(qState: QuantumStateVector) {
 
   // console.log("x:" + x, "y:" + y, "z: " + z)
   // 根据phi计算颜色，假设phi范围[-π, π]映射到[0, 360]度颜色环
-  const hue = ((phi + Math.PI) / (2 * Math.PI)) * 360; // 转换phi到0-360度
+  const hue = (((phi + Math.PI) / (2 * Math.PI)) * 360 + 90) % 360; // 转换phi到0-360度
   const color = `hsl(${hue}, 100%, 50%)`; // 使用HSL色彩空间，饱和度和亮度固定，色相根据phi变化
   return {
     position: new THREE.Vector3(x, y, z),
@@ -130,7 +132,7 @@ function calculatePositionAndColor(qState: QuantumStateVector) {
   };
 }
 
-const QuantumSphereVisualization: React.FC<Props> = ({ qubits, gates }) => {
+const QuantumSphereVisualization: React.FC<Props> = ({ qubits, gates, parentWidth, parentHeight }) => {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -138,6 +140,7 @@ const QuantumSphereVisualization: React.FC<Props> = ({ qubits, gates }) => {
       let current = mountRef.current;
       const width = mountRef.current.clientWidth;
       const height = mountRef.current.clientHeight;
+      console.log(width, height);
       // 场景、相机、渲染器设置
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
@@ -165,7 +168,7 @@ const QuantumSphereVisualization: React.FC<Props> = ({ qubits, gates }) => {
       
       // 创建高亮赤道面
       const CircleGeometry = new THREE.CircleGeometry(1, 32); // 调整内半径和外半径来匹配球体的大小
-      const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xD3D3D3, side: THREE.DoubleSide, opacity: 0.2, transparent: true}); // 使用明亮的颜色
+      const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xb08383, side: THREE.DoubleSide, opacity: 0.1, transparent: true}); // 使用明亮的颜色
       const circle = new THREE.Mesh(CircleGeometry, circleMaterial);
       circle.rotation.x = Math.PI / 2; // 旋转使其垂直于Y轴
 

@@ -4,20 +4,33 @@ import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
 interface GateInfo {
-  gateType: string;
-  qubitIndex: number;
-  gateIndex: number;
+    gateType: string;
+    qubitIndex: number;
+    gateIndex: number;
 }
 
 interface Props {
-  qubits: number;
-  gates: GateInfo[];
+    qubits: number;
+    gates: GateInfo[];
+    parentWidth: number;
+    parentHeight: number;
 }
 
-const QuantumCircuitOutputBar: React.FC<Props> = ({ qubits, gates }) => {
-    const d3Container = useRef(null);
+function binaryToHex(binaryStr: string, maxLength: number): string {
+    if (binaryStr.length > maxLength) {
+        // 将二进制字符串转换为十六进制
+        const decimalValue = parseInt(binaryStr, 2);
+        console.log(decimalValue);
+        const hexValue = decimalValue.toString(16);
+        return hexValue;
+    } else {
+        return binaryStr;
+    }
+}
 
-    const svgWidth = 500, svgHeight = 500;
+const QuantumCircuitOutputBar: React.FC<Props> = ({ qubits, gates, parentWidth, parentHeight }) => {
+    const d3Container = useRef(null);
+    const svgWidth = parentWidth, svgHeight = 500;
     useEffect(() => {
       if (d3Container.current) {
         const svg = d3.select(d3Container.current);
@@ -51,7 +64,6 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({ qubits, gates }) => {
               probability = probability / 2
             }
           }
-
           quantumStates.push({ state, probability });
         }
 
@@ -87,6 +99,7 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({ qubits, gates }) => {
             .attr("height", 0)
             .remove();
 
+        const singleBarWidth = (width / 1.5) / quantumStates.length > 128 ? 128 : (width / 1.5) / quantumStates.length;
         // 进入阶段 + 更新阶段
         bars.enter().append("rect")
             .attr("class", "bar")
@@ -96,31 +109,50 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({ qubits, gates }) => {
             .merge(bars) // 合并进入和更新的选择集
             .transition()
             .duration(500)
-            .attr("x", (d: { state: any; }) => (xScale(d.state) || 0) + xScale.bandwidth() / 2 - 15)
-            .attr("width", 30)
+            .attr("x", (d: { state: any; }) => (xScale(d.state) || 0) + xScale.bandwidth() / 2 - singleBarWidth / 2)
+            .attr("width", singleBarWidth)
             .attr("y", (d: { probability: any; }) => yScale(d.probability))
             .attr("height", (d: { probability: any; }) => height - yScale(d.probability))
             .attr("fill", d3.rgb(150,168,255));
 
 
-        // 创建或选择x轴和y轴的占位符
-          const xAxisGroup = gUpdate.selectAll('.x-axis-group').data([0]);
-          const yAxisGroup = gUpdate.selectAll('.y-axis-group').data([0]);
+    // 创建或选择x轴和y轴的占位符
+        const xAxisGroup = gUpdate.selectAll('.x-axis-group').data([0]);
+        const yAxisGroup = gUpdate.selectAll('.y-axis-group').data([0]);
 
-        xAxisGroup.enter()
+        const updateX = xAxisGroup.enter()
             .append('g')
             .attr('class', 'x-axis-group')
             .attr('transform', `translate(0, ${height})`) // 假设height是你的SVG高度减去上下边距
             .merge(xAxisGroup)
             .call(d3.axisBottom(xScale)); // 更新x轴
+        updateX.selectAll('.tick text')
+            .attr('text-anchor', 'middle') // 设置文本锚点为中间
+            .style('dominant-baseline', 'middle') // 设置基线对齐方式为中间
+            .style('font-size', '12px')
+            .each(function(d) {
+                // 获取刻度标签的文本
+                const labelText = d3.select(this);
+                labelText.text(binaryToHex(labelText.text(), 4));
+            })
+            .append('title') // 添加title元素
+            .text(d => d) // 设置title的内容为刻度标签的值
+        if (quantumStates.length > 10) {
+            updateX.selectAll('.tick text')
+                    .attr('transform', 'rotate(-45)')
+                    .style('text-anchor', 'end');
+        }
 
         yAxisGroup.enter()
             .append('g')
             .attr('class', 'y-axis-group')
             .merge(yAxisGroup)
             .call(d3.axisLeft(yScale)); // 更新y轴
-
+        
+        // 检查是否存在x轴和y轴标签，如果不存在则添加
+        
         // 添加x轴标签
+        gUpdate.select(".x-axis-label").remove();
         gUpdate.append("text")
             .attr("class", "x-axis-label")
             .attr("transform", `translate(${width / 2}, ${height + margin.top + 20})`)
@@ -128,6 +160,7 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({ qubits, gates }) => {
             .text("State");
 
         // 添加y轴标签
+        gUpdate.select(".y-axis-label").remove();
         gUpdate.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 0 - margin.left)
@@ -136,7 +169,7 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({ qubits, gates }) => {
             .style("text-anchor", "middle")
             .text("Probability(%)");
       }
-  }, [qubits, gates]); // 依赖于data的变化
+  }, [qubits, gates, svgWidth, svgHeight]); // 依赖于data的变化
 
   return (
     <svg ref={d3Container} height={svgHeight} width={svgWidth}/>

@@ -17,8 +17,9 @@ import LoginMenu from '@/components/LoginMenu';
 
 import React, {useState} from 'react';
 import { AppBar } from '@mui/material';
+import QuantumVisualization from '@/components/QuantumVisualization';
 
-const graphStyle = {
+const graphStyle:React.CSSProperties = {
   width: "100%",
   height: "100%",
   display: "flex",
@@ -31,7 +32,7 @@ const graphStyle = {
   overflow: "auto",
 };
 
-const kitStyle = {
+const kitStyle:React.CSSProperties = {
   width: "100%",
   height: "100%",
   display: "flex",
@@ -45,7 +46,7 @@ const kitStyle = {
   flex: 1,
 }
 
-const circuitStyle = {
+const circuitStyle:React.CSSProperties = {
   width: "100%",
   height: "100%",
   display: "flex",
@@ -59,7 +60,7 @@ const circuitStyle = {
   flex: 2,
 }
 
-const codeStyle = {
+const codeStyle:React.CSSProperties = {
   width: "100%",
   height: "300px",
   display: "flex",
@@ -71,7 +72,7 @@ const codeStyle = {
   borderWidth: "1px",
   overflow: "auto",
   flex: 1,
-  fontsize: "8px",
+  fontSize: "8px",
 }
 
 
@@ -159,14 +160,7 @@ export default function HomePage() {
             <Code qubits={qubits} gates={gates} />
           </div>
         </div>
-        <div style={{width: "100%", height: "100%", display: 'flex', flexDirection: "row"}}>
-          <div style={graphStyle}>
-            <QuantumCircuitOutputBar qubits={qubits} gates={gates} />
-          </div>
-          <div style={graphStyle}>
-            <QuantumSphereVisualization qubits={qubits} gates={gates} />
-          </div>
-        </div>
+        <QuantumVisualization qubits={qubits} gates={gates} />
       </div>
     </>
   );
