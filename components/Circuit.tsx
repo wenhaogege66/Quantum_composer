@@ -204,8 +204,11 @@ const QuantumCircuit: React.FC<QuantumCircuitProps> = ({
     const container = d3.select("#circuit-container");
     container.selectAll("svg").remove();
 
+    const qubitLabelOffset = 80; // 增加左侧padding
+    const circuitLineStartX = qubitLabelOffset + 10; // 电路线起点右移
+
     // 创建SVG元素并设置样式
-    const svgWidth = Math.max(300, gates.length * 30 + 100);
+    const svgWidth = Math.max(300, gates.length * 30 + 100 + qubitLabelOffset); // 画布宽度也要加padding
     const svgHeight = qubits * 40 + 20;
 
     const svg = container
@@ -214,51 +217,41 @@ const QuantumCircuit: React.FC<QuantumCircuitProps> = ({
       .attr("height", svgHeight)
       .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
       .attr("preserveAspectRatio", "xMinYMin meet")
-      .style("background-color", "white")
+      .style("background-color", "var(--mui-palette-background-paper, white)")
       .style("border-radius", "4px");
 
-    // 绘制量子线路 - 使用更细的线，更好的颜色
+    // 绘制量子线路
     svg
       .selectAll("line.qubit-line")
       .data(new Array(qubits))
       .enter()
       .append("line")
       .attr("class", "qubit-line")
-      .attr("x1", 50)
+      .attr("x1", circuitLineStartX)
       .attr("y1", (d, i) => 30 + i * 40)
       .attr("x2", svgWidth - 20)
       .attr("y2", (d, i) => 30 + i * 40)
-      .attr("stroke", "#1976d2")
+      .attr("stroke", "var(--mui-palette-primary-main, #1976d2)")
       .attr("stroke-width", 1.5)
       .attr("stroke-opacity", 0.7);
 
-    // 绘制量子比特标签 - 使用更现代的样式
+    // 绘制量子比特标签
     svg
       .selectAll("text.qubit-label")
       .data(new Array(qubits))
       .enter()
       .append("text")
       .attr("class", "qubit-label")
-      .text((d, i) => `q[${i}]`)
-      .attr("x", 30) // 增加标签与左边界的距离
-      .attr("y", (d, i) => 35 + i * 40)
+      .text((d, i) => `Q${i}:`)
+      .attr("x", qubitLabelOffset - 15) // 更靠左
+      .attr("y", (d, i) => 30 + i * 40 + 4)
       .attr("font-family", "'Inter', sans-serif")
       .attr("font-size", "12px")
       .attr("font-weight", "500")
-      .attr("fill", "#333")
+      .attr("fill", "var(--mui-palette-text-primary, #333)")
       .attr("text-anchor", "end");
 
-    // 增加左侧填充，确保标签完整显示
-    // 创建左侧背景区域
-    svg
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", 40)
-      .attr("height", svgHeight)
-      .attr("fill", "white");
-
-    // 绘制量子门 - 使用更好的视觉效果
+    // 绘制门时x坐标也要右移
     const gatesGroup = svg
       .selectAll(".gate")
       .data(gates)
@@ -266,7 +259,7 @@ const QuantumCircuit: React.FC<QuantumCircuitProps> = ({
       .append("g")
       .attr("class", "gate")
       .attr("transform", (gate) => {
-        const x = 60 + (gate.gateIndex - 1) * 30;
+        const x = circuitLineStartX + (gate.gateIndex - 1) * 30;
         const y = 20 + gate.qubitIndex * 40;
         return `translate(${x}, ${y})`;
       });

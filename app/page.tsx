@@ -163,6 +163,8 @@ export default function HomePage() {
   const [circuitHeight, setCircuitHeight] = useState(60);
 
   const mainContentRef = useRef<HTMLDivElement>(null);
+  const dragStartXRef = useRef<number>(0);
+  const initialLeftPanelWidthRef = useRef<number>(0);
 
   // 添加量子比特
   const addQubit = () => {
@@ -321,6 +323,8 @@ export default function HomePage() {
   const handleDragStart = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
+    dragStartXRef.current = e.clientX;
+    initialLeftPanelWidthRef.current = leftPanelWidth;
     document.addEventListener("mousemove", handleDragMove);
     document.addEventListener("mouseup", handleDragEnd);
     document.body.style.cursor = "col-resize";
@@ -333,7 +337,8 @@ export default function HomePage() {
   // 拖动时调整左侧面板宽度
   const handleDragMove = (e: MouseEvent) => {
     if (isDragging) {
-      const newWidth = e.clientX;
+      const deltaX = e.clientX - dragStartXRef.current;
+      const newWidth = initialLeftPanelWidthRef.current + deltaX;
       if (newWidth >= 200 && newWidth <= 450) {
         setLeftPanelWidth(newWidth);
       }
@@ -566,7 +571,7 @@ export default function HomePage() {
                 flexGrow: 1,
                 display: "flex",
                 flexDirection: "column",
-                overflow: "hidden",
+                overflow: "auto",
                 minHeight: 0,
               }}
             >
