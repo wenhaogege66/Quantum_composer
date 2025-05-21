@@ -138,28 +138,53 @@ const QuantumSphereVisualization: React.FC<Props> = ({ qubits, gates, parentWidt
   useEffect(() => {
     if(mountRef.current){
       let current = mountRef.current;
-      const width = mountRef.current.clientWidth;
-      const height = mountRef.current.clientHeight;
-      console.log(width, height);
+      
+      // 确保渲染区域为正方形，取 min(width, height) 作为边长
+      let size = Math.min(mountRef.current.clientWidth, mountRef.current.clientHeight);
+      
+      // 如果父容器尺寸太小，设置最小尺寸
+      size = Math.max(size, 200);
+      
+      console.log("Bloch sphere rendering size:", size);
+      
       // 场景、相机、渲染器设置
       const scene = new THREE.Scene();
+      
+      // 关键修复：使用固定1:1宽高比，避免变形
       const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-      // camera.position.z = 4;
-
-      // const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-
+      
       // 设置相机位置以实现俯视效果
       camera.position.set(0, 1, 4); // X轴（左右），Y轴（上下），Z轴（前后）
       camera.lookAt(scene.position); // 确保相机朝向场景中心
 
+      // 创建渲染器并设置为正方形尺寸
       const renderer = new THREE.WebGLRenderer({antialias: true});
-      renderer.setSize(width, height);
+      renderer.setSize(size, size);
       renderer.setClearColor(0xffffff); // 设置背景色为白色
+      
+      // 调整画布样式，确保完美的1:1宽高比
+      renderer.domElement.style.display = 'block';
+      renderer.domElement.style.margin = '0 auto'; // 水平居中
+      renderer.domElement.style.aspectRatio = '1/1'; // 强制1:1宽高比
+      renderer.domElement.style.width = '100%';
+      renderer.domElement.style.height = '100%';
+      renderer.domElement.style.maxWidth = '100%';
+      renderer.domElement.style.position = 'absolute';
+      renderer.domElement.style.top = '0';
+      renderer.domElement.style.left = '0';
+      renderer.domElement.style.objectFit = 'contain'; // 确保内容完全可见
+      
+      // 将渲染器添加到DOM
       mountRef.current.appendChild(renderer.domElement);
 
       // 创建Q-Sphere（球体）
       const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-      const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xAFEEEE, wireframe: false, opacity: 0.5, transparent: true });
+      const sphereMaterial = new THREE.MeshBasicMaterial({ 
+        color: 0xAFEEEE, 
+        wireframe: false, 
+        opacity: 0.5, 
+        transparent: true 
+      });
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
       sphere.name = 'sphere';
       sphere.renderOrder = 1;
@@ -253,27 +278,73 @@ const QuantumSphereVisualization: React.FC<Props> = ({ qubits, gates, parentWidt
       });
 
       const controls = new OrbitControls(camera, renderer.domElement);
-      // controls.update();
+      controls.enableDamping = true; // 添加阻尼效果，使旋转更平滑
+      controls.dampingFactor = 0.05;
+      
+      // 添加窗口大小变化监听器
+      const handleResize = () => {
+        if (!mountRef.current) return;
+        
+        // 重新计算正方形尺寸
+        let newSize = Math.min(mountRef.current.clientWidth, mountRef.current.clientHeight);
+        newSize = Math.max(newSize, 200); // 最小尺寸
+        
+        // 更新渲染器尺寸
+        renderer.setSize(newSize, newSize);
+        
+        // 不需要更新相机宽高比，因为我们固定为1:1
+      };
+      
+      // 监听窗口大小变化
+      window.addEventListener('resize', handleResize);
 
       const animate = () => {
         requestAnimationFrame(animate);
+        controls.update(); // 更新控制器
         renderer.render(scene, camera);
-      
-        controls.update();
       };
       
       animate();
+      
       // 清理
       return () => {
+        window.removeEventListener('resize', handleResize);
         current && current.removeChild(renderer.domElement);
       };
     }
   }, [qubits, gates]);
 
   return (
-    <>
-      <div ref={mountRef} style={{height:"100%", width: "100%", maxHeight: "500px", maxWidth:"500px", aspectRatio: 1}}/>
-    </>);
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        minHeight: '200px',
+        position: 'relative'
+      }}
+    >
+      <div 
+        ref={mountRef} 
+        style={{
+          aspectRatio: '1/1', // 强制1:1宽高比
+          width: '100%',
+          height: '0', // 设置高度为0，由aspectRatio控制高度
+          paddingBottom: '100%', // 备用方式确保宽高比
+          maxWidth: '100%', 
+          maxHeight: '100%',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'relative', // 确保子元素定位正确
+          overflow: 'hidden' // 防止溢出
+        }}
+      />
+    </div>
+  );
 };
 
 export default QuantumSphereVisualization;

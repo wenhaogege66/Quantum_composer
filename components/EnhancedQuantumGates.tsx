@@ -204,6 +204,23 @@ interface IGateButtonProps {
 
 // 量子门按钮组件
 const GateButton: React.FC<IGateButtonProps> = ({ gate, onGateSelect }) => {
+  // 处理拖动开始
+  const handleDragStart = (e: React.DragEvent<HTMLButtonElement>) => {
+    // 设置拖动数据
+    e.dataTransfer.setData("application/quantum-gate", JSON.stringify({
+      gateType: gate.symbol,
+      gateInfo: gate
+    }));
+    
+    // 设置拖动图像
+    const img = new Image();
+    img.src = gate.image.src;
+    e.dataTransfer.setDragImage(img, 15, 15);
+    
+    // 设置允许的拖放效果
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
   return (
     <Tooltip
       title={
@@ -226,6 +243,8 @@ const GateButton: React.FC<IGateButtonProps> = ({ gate, onGateSelect }) => {
     >
       <Button
         onClick={() => onGateSelect(gate)}
+        draggable="true"
+        onDragStart={handleDragStart}
         variant="outlined"
         sx={{
           width: 60,
@@ -240,6 +259,7 @@ const GateButton: React.FC<IGateButtonProps> = ({ gate, onGateSelect }) => {
           "&:hover": {
             backgroundColor: "rgba(63, 81, 181, 0.08)",
           },
+          cursor: "grab",
         }}
       >
         <img
@@ -366,9 +386,24 @@ const EnhancedQuantumGates: React.FC<EnhancedQuantumGatesProps> = ({
         scrollButtons="auto"
         aria-label="量子门类别"
         sx={{ mb: 2 }}
+        textColor="inherit"
+        indicatorColor="primary"
       >
         {gateCategories.map((category) => (
-          <Tab key={category.id} label={category.label} value={category.id} />
+          <Tab
+            key={category.id}
+            label={category.label}
+            value={category.id}
+            sx={{
+              color: "var(--mui-palette-text-secondary, #666) !important",
+              fontWeight: 500,
+              fontSize: "0.875rem",
+              textTransform: "none",
+              "&.Mui-selected": {
+                color: "var(--mui-palette-primary-main, #1976d2) !important",
+              },
+            }}
+          />
         ))}
       </Tabs>
 

@@ -85,11 +85,11 @@ const QuantumVisualization: React.FC<Props> = ({ qubits, gates }) => {
       id="barDiv"
       sx={{
         flex: 1,
+        minHeight: 0,
+        height: "100%",
+        overflow: "auto",
         display: "flex",
         flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        overflow: "hidden",
         borderRadius: 1,
         bgcolor: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
@@ -114,20 +114,13 @@ const QuantumVisualization: React.FC<Props> = ({ qubits, gates }) => {
           flex: 1,
           position: "relative",
           p: 1,
-          height: expanded
-            ? "300px"
-            : currentView === "combined"
-            ? isTablet
-              ? "150px"
-              : "180px"
-            : "calc(100% - 40px)",
-          minHeight: expanded ? "300px" : "150px",
+          minHeight: 0,
         }}
       >
         <QuantumCircuitOutputBar
           qubits={qubits}
           gates={gates}
-          parentWidth={barParentDivWidth - 16} // 减去padding
+          parentWidth={barParentDivWidth - 16}
           parentHeight={
             expanded
               ? 300
@@ -136,7 +129,7 @@ const QuantumVisualization: React.FC<Props> = ({ qubits, gates }) => {
                 ? 150
                 : 180
               : barParentDivHeight - 56
-          } // 减去标题和padding高度
+          }
         />
       </Box>
     </Paper>
@@ -148,13 +141,14 @@ const QuantumVisualization: React.FC<Props> = ({ qubits, gates }) => {
       elevation={0}
       ref={sphereParentDivRef}
       id="sphereDiv"
+      className="quantum-visualization-container"
       sx={{
         flex: 1,
+        minHeight: 0,
+        height: "100%",
+        overflow: "auto",
         display: "flex",
         flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        overflow: "hidden",
         borderRadius: 1,
         bgcolor: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
@@ -175,33 +169,31 @@ const QuantumVisualization: React.FC<Props> = ({ qubits, gates }) => {
         布洛赫球表示
       </Typography>
       <Box
+        className="quantum-visualization-container"
         sx={{
           flex: 1,
           position: "relative",
           p: 1,
-          height: expanded
-            ? "300px"
-            : currentView === "combined"
-            ? isTablet
-              ? "150px"
-              : "180px"
-            : "calc(100% - 40px)",
-          minHeight: expanded ? "300px" : "150px",
+          minHeight: currentView === "combined" ? "250px" : "350px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          aspectRatio: "1/1", // 确保盒子是正方形
         }}
       >
         <QuantumSphereVisualization
           qubits={qubits}
           gates={gates}
-          parentWidth={sphereParentDivWidth - 16} // 减去padding
+          parentWidth={sphereParentDivWidth - 16}
           parentHeight={
             expanded
               ? 300
               : currentView === "combined"
               ? isTablet
-                ? 150
-                : 180
+                ? 250
+                : 280
               : sphereParentDivHeight - 56
-          } // 减去标题和padding高度
+          }
         />
       </Box>
     </Paper>
@@ -214,65 +206,35 @@ const QuantumVisualization: React.FC<Props> = ({ qubits, gates }) => {
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        flex: 1,
+        minHeight: 0,
         overflow: "hidden",
       }}
     >
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          borderBottom: 1,
-          borderColor: "divider",
-          mb: 1,
-        }}
-      >
-        <Tabs
-          value={currentView}
-          onChange={handleViewChange}
-          variant="fullWidth"
-          textColor="primary"
-          indicatorColor="primary"
-          sx={{
-            minHeight: "36px",
-            "& .MuiTab-root": {
-              minHeight: "36px",
-              fontSize: "0.8rem",
-              textTransform: "none",
-              fontWeight: 500,
-            },
-            flexGrow: 1,
-          }}
-        >
-          <Tab value="combined" label="组合视图" />
-          <Tab value="probability" label="概率分布" />
-          <Tab value="bloch" label="布洛赫球" />
-        </Tabs>
-        <IconButton size="small" onClick={toggleExpand} sx={{ mr: 1 }}>
-          {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </IconButton>
-      </Box>
-
-      <Box
-        sx={{
           flex: 1,
+          minHeight: 0,
           display: "flex",
           flexDirection: {
             xs: "column",
             md: currentView === "combined" ? "row" : "column",
           },
-          overflowY: "auto",
-          overflowX: "hidden",
           gap: 2,
           height: expanded ? "auto" : "100%",
           maxHeight: expanded ? "none" : "100%",
           transition: "height 0.3s ease",
+          overflow: "hidden",
         }}
       >
-        {(currentView === "combined" || currentView === "probability") &&
-          renderProbabilityDistribution()}
-        {(currentView === "combined" || currentView === "bloch") &&
-          renderBlochSphere()}
+        <Box sx={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+          {(currentView === "combined" || currentView === "probability") &&
+            renderProbabilityDistribution()}
+        </Box>
+        <Box sx={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+          {(currentView === "combined" || currentView === "bloch") &&
+            renderBlochSphere()}
+        </Box>
       </Box>
     </Box>
   );

@@ -255,7 +255,7 @@ const CircuitModules: React.FC<CircuitModulesProps> = ({
   );
 
   return (
-    <Box sx={{ width: "100%", height: "100%" }}>
+    <Paper sx={{ width: "100%", height: "100%", bgcolor: "background.paper", p: 1.5, display: "flex", flexDirection: "column", overflow: "auto" }} className="circuit-modules-paper">
       <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         电路模块库
       </Typography>
@@ -611,7 +611,7 @@ const CircuitModules: React.FC<CircuitModulesProps> = ({
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Paper>
   );
 };
 

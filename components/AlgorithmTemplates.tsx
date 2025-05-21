@@ -242,7 +242,9 @@ const AlgorithmTemplates: React.FC<AlgorithmTemplatesProps> = ({
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
+        bgcolor: "background.paper",
       }}
+      className="algorithm-templates-paper"
     >
       <Typography variant="subtitle1" gutterBottom sx={{ mb: 2 }}>
         选择常用量子算法模板:

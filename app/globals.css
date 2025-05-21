@@ -5,6 +5,7 @@
   --text-primary: #333333;
   --text-secondary: #666666;
   --border-color: #e0e0e0;
+  --primary-color: #3f51b5;
 }
 
 /* 深色模式变量 */
@@ -14,6 +15,7 @@
   --text-primary: #ffffff;
   --text-secondary: #aaaaaa;
   --border-color: #333333;
+  --primary-color: #7986cb;
 }
 
 /* 全局样式 */
@@ -23,59 +25,1116 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 自定义滚动条 */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* 自定义滚动条 - 使用更高特异性和!important确保不被MUI覆盖 */
+html body::-webkit-scrollbar,
+html body *::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+  background-color: transparent !important;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+html body::-webkit-scrollbar-track,
+html body *::-webkit-scrollbar-track {
+  background: transparent !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 100, 0.4);
-  border-radius: 4px;
+html body::-webkit-scrollbar-thumb,
+html body *::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 180, 180, 0.5) !important;
+  border-radius: 4px !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(100, 100, 100, 0.6);
+html body::-webkit-scrollbar-thumb:hover,
+html body *::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(160, 160, 160, 0.7) !important;
 }
 
 /* 深色模式下的滚动条 */
-.dark-mode ::-webkit-scrollbar-thumb {
-  background-color: rgba(200, 200, 200, 0.3);
+html[data-theme="dark"] body::-webkit-scrollbar-thumb,
+html[data-theme="dark"] body *::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 120, 120, 0.4) !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
 }
 
-.dark-mode ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(200, 200, 200, 0.5);
+html[data-theme="dark"] body::-webkit-scrollbar-thumb:hover,
+html[data-theme="dark"] body *::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(140, 140, 140, 0.6) !important;
 }
 
 /* 可调节分隔线样式 */
 .resizable-divider-h {
   cursor: col-resize;
-  width: 5px;
+  width: 10px;
   background-color: transparent;
   transition: background-color 0.2s ease;
-  z-index: 10;
-  position: relative;
+  z-index: 1000;
 }
 
 .resizable-divider-h:hover,
 .resizable-divider-h.dragging {
   background-color: var(--border-color);
+  opacity: 0.8;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 添加一个中心线，使分割线更明显 */
+.resizable-divider-h::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+
+.resizable-divider-h:hover::after,
+.resizable-divider-h.dragging::after {
+  background-color: var(--border-color);
 }
 
 .resizable-divider-v {
   cursor: row-resize;
-  height: 5px;
+  height: 8px;
   background-color: transparent;
   transition: background-color 0.2s ease;
-  z-index: 10;
-  position: relative;
+  z-index: 1000;
 }
 
 .resizable-divider-v:hover,
 .resizable-divider-v.dragging {
   background-color: var(--border-color);
+  opacity: 0.8;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 添加一个中心线，使垂直分割线更明显 */
+.resizable-divider-v::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+
+.resizable-divider-v:hover::after,
+.resizable-divider-v.dragging::after {
+  background-color: var(--border-color);
+}
+
+/* 确保TabPanel内容区域的背景色正确 */
+.algorithm-templates-paper,
+.circuit-modules-paper {
+  background-color: var(--bg-paper) !important;
+}
+
+/* 深色模式下依然保持正确的背景色 */
+[data-theme="dark"] .algorithm-templates-paper,
+[data-theme="dark"] .circuit-modules-paper {
+  background-color: var(--bg-paper) !important;
+}
+
+/* 修复Accordion和Box组件的背景色问题 */
+.MuiAccordionSummary-root,
+.MuiAccordion-root,
+.MuiAccordionDetails-root,
+.MuiBox-root {
+  background-color: var(--bg-paper) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 确保Accordion组件的子元素文本颜色正确 */
+.MuiAccordionSummary-root .MuiTypography-root,
+.algorithm-templates-paper .MuiTypography-root,
+.circuit-modules-paper .MuiTypography-root {
+  color: var(--text-primary) !important;
+}
+
+.MuiAccordionSummary-root .MuiTypography-body2,
+.algorithm-templates-paper .MuiTypography-body2,
+.circuit-modules-paper .MuiTypography-body2,
+.MuiTypography-subtitle1,
+.MuiTypography-subtitle2,
+.MuiTypography-caption {
+  color: var(--text-secondary) !important;
+}
+
+/* 修复标题颜色 */
+.algorithm-templates-paper .MuiTypography-subtitle1,
+.circuit-modules-paper .MuiTypography-h6 {
+  color: var(--text-primary) !important;
+}
+
+/* 修复图标颜色 */
+.MuiListItemIcon-root svg,
+.MuiAccordionSummary-root svg,
+.MuiSvgIcon-root {
+  color: var(--text-primary) !important;
+  fill: var(--text-primary) !important;
+}
+
+/* 修复左侧栏中特定Box组件的样式 */
+.algorithm-templates-paper .MuiBox-root,
+.circuit-modules-paper .MuiBox-root {
+  background-color: var(--bg-paper) !important;
+}
+
+/* 确保列表项背景色和文本颜色正确 */
+.MuiListItem-root,
+.MuiListItemText-root,
+.MuiListItemText-primary,
+.MuiListItemText-secondary {
+  background-color: var(--bg-paper) !important;
+  color: var(--text-primary) !important;
+}
+
+.MuiListItemText-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* 修复对话框和弹出窗口的背景色 */
+.MuiDialog-paper,
+.MuiPopover-paper {
+  background-color: var(--bg-paper) !important;
+}
+
+/* 确保按钮文本颜色正确 */
+.MuiButton-outlined,
+.MuiButton-contained {
+  color: inherit !important;
+}
+
+/* 修复TextField的文本颜色 */
+.MuiInputBase-root,
+.MuiInputLabel-root,
+.MuiFormLabel-root {
+  color: var(--text-primary) !important;
+}
+
+/* 强制所有文本内容使用正确的颜色 */
+/* 确保算法模板中的内容正确显示 */
+.algorithm-templates-paper *,
+.circuit-modules-paper * {
+  color: var(--text-primary);
+}
+
+/* 次要文本使用次要颜色 */
+.algorithm-templates-paper .MuiTypography-colorTextSecondary,
+.circuit-modules-paper .MuiTypography-colorTextSecondary {
+  color: var(--text-secondary) !important;
+}
+
+/* ====== 为算法模板和电路模块的元素添加边框 ====== */
+
+/* 为所有算法模板中的Accordion添加边框和阴影 */
+.algorithm-templates-paper .MuiAccordion-root {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  margin-bottom: 12px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+  transition: box-shadow 0.3s ease, transform 0.2s ease !important;
+}
+
+/* 悬停效果 */
+.algorithm-templates-paper .MuiAccordion-root:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* 展开状态 */
+.algorithm-templates-paper .Mui-expanded {
+  border-color: var(--primary-color, #3f51b5) !important;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.15) !important;
+}
+
+/* 为电路模块中的模块项添加边框 */
+.circuit-modules-paper .MuiPaper-root {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+  transition: box-shadow 0.3s ease, transform 0.2s ease !important;
+}
+
+/* 悬停效果 */
+.circuit-modules-paper .MuiPaper-root:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* 隐藏内部不必要的边框 */
+.circuit-modules-paper .MuiPaper-root .MuiDivider-root,
+.algorithm-templates-paper .MuiAccordionSummary-root::after {
+  background-color: var(--border-color) !important;
+  opacity: 0.6;
+}
+
+/* 添加突出颜色的边框线 */
+.circuit-modules-paper .MuiBox-root:first-of-type {
+  /* 删除左侧蓝色竖线 */
+  /* border-left: 3px solid var(--primary-color, #3f51b5); */
+  border-radius: 0 !important;
+}
+
+/* 电路模块项展开/收起指示器美化 */
+.circuit-modules-paper .MuiSvgIcon-root {
+  color: var(--primary-color) !important;
+  opacity: 0.8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.circuit-modules-paper .MuiSvgIcon-root:hover {
+  opacity: 1;
+}
+
+/* ====== 为量子电路图修复颜色问题 ====== */
+
+/* 强制显示电路主容器 */
+#circuit-main-container {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 220px !important;
+  position: relative !important;
+  overflow: visible !important;
+  z-index: 1 !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+/* 强制显示电路容器 - 使用详细选择器避免冲突 */
+#circuit-main-container > #circuit-container {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 180px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* 强制显示SVG */
+#quantum-circuit-svg, svg.quantum-circuit {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 3 !important;
+  min-height: 120px !important;
+  background-color: white !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+/* 确保电路图的背景颜色正确 */
+#circuit-main-container svg {
+  background-color: white !important;
+  display: block !important;
+  max-width: 100% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+/* 确保量子比特线和文本颜色与背景有足够对比度 */
+svg.quantum-circuit line.qubit-line {
+  stroke: #1976d2 !important;  /* 使用固定的蓝色，不依赖CSS变量 */
+  stroke-width: 2px !important;  /* 增加线条宽度 */
+  opacity: 1 !important;  /* 完全不透明 */
+  visibility: visible !important;
+  display: block !important;
+}
+
+svg.quantum-circuit text.qubit-label {
+  fill: #000000 !important;  /* 使用黑色文本，不依赖CSS变量 */
+  font-weight: 600 !important;  /* 增加字体粗细 */
+  font-size: 12px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* 确保门的背景、边框和文本颜色可见 */
+svg.quantum-circuit .gate rect {
+  stroke: #1976d2 !important;
+  stroke-width: 2px !important;
+  /* 确保背景色更鲜明 */
+  fill-opacity: 0.8 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* 为深色主题下的门背景添加特定颜色 */
+[data-theme="dark"] svg.quantum-circuit .gate rect {
+  fill: #2a2a5e !important; /* 深蓝色背景 */
+}
+
+svg.quantum-circuit .gate text {
+  fill: #000000 !important;
+  font-weight: bold !important;
+  /* 增加文本大小 */
+  font-size: 12px !important;
+  visibility: visible !important;
+  display: block !important;
+  pointer-events: all !important;
+}
+
+/* 提高门图标的可见度 */
+svg.quantum-circuit .gate image {
+  opacity: 0.8 !important; /* 提高透明度 */
+  filter: brightness(1.5) contrast(1.5) !important; /* 增加亮度和对比度 */
+  visibility: visible !important;
+  display: block !important;
+  pointer-events: all !important;
+  overflow: visible !important;
+}
+
+/* 在深色主题下进一步提高图标可见度 */
+[data-theme="dark"] svg.quantum-circuit .gate image {
+  opacity: 0.9 !important;
+  filter: brightness(2) contrast(2) invert(1) !important; /* 深色主题下反转颜色 */
+}
+
+/* 确保整个门组元素正确显示 */
+svg.quantum-circuit .gate {
+  visibility: visible !important;
+  display: block !important;
+  overflow: visible !important;
+  transform-origin: center !important;
+  transform-box: fill-box !important;
+  pointer-events: all !important;
+  position: relative !important;
+  z-index: 50 !important; /* 确保量子门显示在拖放区域上方 */
+}
+
+/* 修复门组元素悬停效果 - 删除可能与JS冲突的部分 */
+svg.quantum-circuit .gate:hover {
+  z-index: 100 !important;
+  /* 移除可能与JS冲突的transform和filter，这些由JS直接处理 */
+}
+
+/* 确保连接线和控制点可见 */
+svg.quantum-circuit line:not(.qubit-line) {
+  stroke: var(--text-primary) !important;
+  stroke-width: 1.5px !important;
+  z-index: 1 !important; /* 确保线条在门图标下方 */
+}
+
+svg.quantum-circuit circle {
+  stroke: var(--text-primary) !important;
+  fill: var(--bg-paper) !important;
+}
+
+/* 确保突出显示的比特线有高对比度 */
+svg.quantum-circuit line.qubit-line[stroke-opacity="1"] {
+  stroke: var(--primary-color) !important;
+  stroke-width: 2.5px !important;
+}
+
+/* ====== 量子态可视化修复 ====== */
+
+/* 修复布洛赫球容器背景颜色 */
+#sphereDiv {
+  background-color: var(--bg-paper) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 确保THREE.js渲染的画布在深色主题下有正确的背景 */
+#sphereDiv canvas {
+  background-color: var(--bg-paper) !important;
+  display: block !important;
+  margin: 0 auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 1/1 !important; /* 强制1:1宽高比 */
+  border-radius: 4px !important;
+}
+
+/* 布洛赫球容器样式增强 */
+#sphereDiv > div {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 250px !important;
+  aspect-ratio: 1/1 !important; /* 强制1:1宽高比 */
+}
+
+/* 修复布洛赫球中的文本标签 */
+#sphereDiv [style*="font-family"] {
+  color: var(--text-primary) !important;
+  fill: var(--text-primary) !important;
+}
+
+/* 确保THREE.js场景中的所有元素在深色主题下可见 */
+[data-theme="dark"] #sphereDiv canvas {
+  filter: brightness(0.85) !important; /* 稍微调暗,提高对比度 */
+}
+
+/* 量子态可视化组件的通用样式修复 */
+.MuiBox-root[id^="sphere"], 
+.MuiBox-root[id^="bar"] {
+  background-color: var(--bg-paper) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 强制所有布洛赫球相关容器为正方形 */
+.quantum-visualization-container {
+  aspect-ratio: 1/1 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* 确保THREE.js画布永远保持正方形 */
+.quantum-visualization-container canvas {
+  aspect-ratio: 1/1 !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+}
+
+/* 确保布洛赫球内部容器也保持正方形 */
+.quantum-visualization-container > div {
+  aspect-ratio: 1/1 !important;
+  width: 100% !important;
+  height: auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* 修复QuantumSphereVisualization组件的容器样式 */
+[ref="mountRef"] {
+  aspect-ratio: 1/1 !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* 确保任何通过动态生成的MUI类名元素也能得到正确背景颜色 */
+.MuiBox-root {
+  background-color: var(--bg-paper) !important;
+}
+
+/* ====== Paper组件修复 ====== */
+
+/* 确保所有Paper组件在任何主题下都有正确的背景色 */
+.MuiPaper-root {
+  background-color: var(--bg-paper) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 特别针对elevation0的Paper */
+.MuiPaper-elevation0 {
+  background-color: var(--bg-paper) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+/* 确保Paper内的文本元素有正确的颜色 */
+.MuiPaper-root .MuiTypography-root {
+  color: var(--text-primary) !important;
+}
+
+.MuiPaper-root .MuiTypography-colorTextSecondary {
+  color: var(--text-secondary) !important;
+}
+
+/* 深色主题下Paper组件的调整 */
+[data-theme="dark"] .MuiPaper-root {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 为Paper组件内的子元素添加适当的颜色 */
+.MuiPaper-root button,
+.MuiPaper-root input,
+.MuiPaper-root label {
+  color: var(--text-primary) !important;
+}
+
+/* 特殊处理mui-nbjrcf类名开头的Paper组件 */
+[class*="mui-nbjrcf"] {
+  background-color: var(--bg-paper) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+/* 确保该组件内的所有内容都有正确颜色 */
+[class*="mui-nbjrcf"] * {
+  color: var(--text-primary) !important;
+  background-color: transparent !important;
+}
+
+/* 修改提示文本颜色使其更明显 */
+#circuit-main-container svg text[font-size="14px"] {
+  fill: #1976d2 !important;  /* 使用蓝色 */
+  font-weight: bold !important;
+}
+
+/* 强制设置深色模式下的颜色 */
+[data-theme="dark"] #quantum-circuit-svg {
+  background-color: #1e1e1e !important;  /* 深色背景 */
+}
+
+[data-theme="dark"] svg.quantum-circuit line.qubit-line {
+  stroke: #90caf9 !important;  /* 浅蓝色，在深色背景上更明显 */
+}
+
+[data-theme="dark"] svg.quantum-circuit text.qubit-label,
+[data-theme="dark"] svg.quantum-circuit text[font-size="14px"] {
+  fill: #ffffff !important;  /* 白色文本 */
+}
+
+/* 为量子电路容器添加自定义滚动条样式 */
+#circuit-main-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#circuit-main-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+#circuit-main-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+#circuit-main-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* 深色主题下的滚动条样式 */
+[data-theme="dark"] #circuit-main-container {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+[data-theme="dark"] #circuit-main-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] #circuit-main-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 确保任何可能的父容器不会限制电路容器的宽度 */
+.MuiBox-root, .MuiCardContent-root, .MuiCard-root {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 防止MuiBox-root遮挡量子门 */
+#circuit-main-container .MuiBox-root[id^="dropzone"] {
+  z-index: 20 !important; 
+  pointer-events: auto !important;
+}
+
+/* 确保量子门在拖放区域上方 */
+#circuit-container {
+  z-index: 30 !important;
+  position: relative !important;
+}
+
+/* 确保SVG内容优先于外部Box元素 */
+#circuit-main-container {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#circuit-container {
+  position: relative !important;
+  z-index: 30 !important;
+}
+
+/* 断开层叠上下文，确保元素的z-index正确工作 */
+.MuiBox-root#circuit-main-container,
+.MuiBox-root#circuit-main-container * {
+  transform-style: flat !important;
+  transform: translateZ(0) !important;
+}
+
+/* 确保量子门在正确位置显示 */
+#quantum-circuit-svg .gate {
+  pointer-events: all !important;
+  cursor: pointer !important;
+  transform-origin: center !important;
+  transform-box: fill-box !important;
+}
+
+/* 确保量子门元素显示在拖放区域上方 */
+#circuit-container svg.quantum-circuit .gate {
+  z-index: 150 !important;
+}
+
+/* 修复量子门hover效果 */
+#circuit-container svg.quantum-circuit .gate:hover {
+  z-index: 200 !important;
+}
+
+/* 确保量子门图像正确显示 */
+#quantum-circuit-svg .gate image {
+  pointer-events: all !important;
+  cursor: pointer !important;
+  filter: brightness(1.2) contrast(1.2) !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 深色主题下的量子门图像 */
+[data-theme="dark"] #quantum-circuit-svg .gate image {
+  filter: brightness(1.5) contrast(1.5) invert(1) !important; /* 深色主题下反转颜色提高可见性 */
+}
+
+/* 量子门悬停效果 */
+#quantum-circuit-svg .gate:hover image {
+  filter: brightness(1.4) contrast(1.4) !important;
+}
+
+[data-theme="dark"] #quantum-circuit-svg .gate:hover image {
+  filter: brightness(1.7) contrast(1.7) invert(1) !important;
+}
+
+/* ====== 量子电路门增强样式 ====== */
+
+/* 确保量子门图像正确显示并位于量子比特线上 */
+#quantum-circuit-svg .gate {
+  pointer-events: all !important;
+  cursor: pointer !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+  z-index: 150 !important;
+  position: relative !important;
+}
+
+/* 确保量子门的图像（SVG或PNG）正确显示 */
+#quantum-circuit-svg .gate image {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+  pointer-events: all !important;
+  cursor: pointer !important;
+}
+
+/* 连接线和控制点样式增强 */
+#quantum-circuit-svg .gate-connector,
+#quantum-circuit-svg .control-point,
+#quantum-circuit-svg .target-point,
+#quantum-circuit-svg .target-x {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* 确保量子电路容器和SVG始终可见 */
+#circuit-container,
+#quantum-circuit-svg {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* 确保拖放区域位于合适的层级并且可以接收事件 */
+#circuit-main-container [id^="dropzone-"] {
+  z-index: 20 !important;
+  position: absolute !important;
+  pointer-events: auto !important;
+  cursor: default !important;
+}
+
+/* 调整量子比特线的样式使其更明显 */
+#quantum-circuit-svg .qubit-line {
+  stroke-width: 2.5px !important;
+  stroke-opacity: 0.9 !important;
+}
+
+/* 高亮当前可拖放区域 */
+#quantum-circuit-svg .qubit-line[stroke-opacity="1"] {
+  stroke-width: 3px !important;
+  stroke-opacity: 1 !important;
+}
+
+/* 全新优化 - 确保门图像元素能够正确显示 */
+svg.quantum-circuit .gate {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+  z-index: 150 !important;
+  position: relative !important;
+  pointer-events: all !important;
+  transform-origin: center !important;
+  transform-box: fill-box !important;
+}
+
+/* 确保门图像元素始终可见 */
+svg.quantum-circuit .gate image {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+  pointer-events: all !important;
+  position: relative !important;
+  z-index: 155 !important;
+  filter: brightness(1.2) contrast(1.2) !important;
+}
+
+/* 确保门位置计算正确 - 防止位置错乱 */
+svg.quantum-circuit .gate[transform^="translate"] {
+  transform: var(--transform) !important;
+}
+
+/* 确保拖放区域位于量子门下方 */
+[id^="dropzone-"] {
+  z-index: 10 !important;
+  position: absolute !important;
+  display: block !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* 确保量子门的连接线正确显示 */
+svg.quantum-circuit .gate-connector {
+  stroke: #555 !important;
+  stroke-width: 1.5px !important;
+  stroke-dasharray: 2,2 !important;
+  display: block !important;
+  visibility: visible !important;
+  z-index: 140 !important;
+}
+
+/* 确保控制点和目标点正确显示 */
+svg.quantum-circuit .control-point,
+svg.quantum-circuit .target-point,
+svg.quantum-circuit .target-x {
+  display: block !important;
+  visibility: visible !important;
+  z-index: 145 !important;
+}
+
+/* 确保整个电路渲染区域的深度堆叠正确 */
+#circuit-main-container {
+  z-index: 10 !important;
+}
+#circuit-container {
+  z-index: 20 !important;
+}
+#quantum-circuit-svg {
+  z-index: 30 !important;
+}
+.qubit-line, .qubit-label {
+  z-index: 40 !important;
+}
+.gate-connector {
+  z-index: 140 !important;
+}
+.control-point, .target-point, .target-x {
+  z-index: 145 !important;
+}
+.gate {
+  z-index: 150 !important;
+}
+.gate image {
+  z-index: 155 !important;
+}
+.gate:hover {
+  z-index: 200 !important;
+}
+
+/* 确保门组元素悬停效果 - 删除可能与JS冲突的部分 */
+svg.quantum-circuit .gate:hover {
+  z-index: 200 !important;
+  /* 移除可能与JS冲突的transform和filter，这些由JS直接处理 */
+}
+
+/* 确保连接线和控制点可见 */
+svg.quantum-circuit line:not(.qubit-line) {
+  stroke: var(--text-primary) !important;
+  stroke-width: 1.5px !important;
+  z-index: 140 !important; /* 确保线条在门图标下方 */
+}
+
+svg.quantum-circuit circle {
+  stroke: var(--text-primary) !important;
+  fill: var(--bg-paper) !important;
+}
+
+/* 确保突出显示的比特线有高对比度 */
+svg.quantum-circuit line.qubit-line[stroke-opacity="1"] {
+  stroke: var(--primary-color) !important;
+  stroke-width: 2.5px !important;
+}
+
+/* 量子门紧急修复 - 更强力的规则 */
+g.gate, [id^="gate-"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1000 !important;
+  pointer-events: all !important;
+}
+
+g.gate image, [id^="gate-"] image {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: all !important;
+  filter: brightness(1.4) contrast(1.4) !important;
+}
+
+/* 确保量子门始终在最上层 */
+#quantum-circuit-svg {
+  z-index: 50 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+#circuit-container * {
+  z-index: auto !important;
+}
+
+#circuit-container [id^="gate-"] {
+  z-index: 1000 !important;
+  position: relative !important;
+}
+
+/* 强制所有拖放区域位于低层 */
+[id^="dropzone-"] {
+  z-index: 5 !important;
+  position: absolute !important;
+  pointer-events: auto !important;
+}
+
+/* 强制量子门在拖放区域之上 */
+#quantum-circuit-svg {
+  isolation: isolate !important;
+}
+
+svg.quantum-circuit .gate {
+  isolation: isolate !important;
+  transform: translateZ(0) !important;
+}
+
+/* 启用GPU加速以提高渲染性能 */
+#circuit-container,
+#quantum-circuit-svg,
+.gate {
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  will-change: transform !important;
+}
+
+/* 新门元素样式 - 使用foreignObject */
+#quantum-circuit-svg foreignObject.gate-container {
+  overflow: visible !important;
+  z-index: 2000 !important;
+  pointer-events: all !important;
+}
+
+#quantum-circuit-svg foreignObject.gate-container div.gate {
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  overflow: visible !important;
+  z-index: 2000 !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+/* 确保foreignObject的内容可见且位于顶层 */
+foreignObject {
+  overflow: visible !important;
+}
+
+foreignObject > * {
+  overflow: visible !important;
+}
+
+/* 确保svg中的foreignObject正确显示 */
+svg foreignObject {
+  display: block !important;
+  visibility: visible !important;
+  overflow: visible !important;
+}
+
+/* 针对特定浏览器修复 */
+@supports (-moz-appearance:none) {
+  /* Firefox 特定修复 */
+  #quantum-circuit-svg foreignObject.gate-container div.gate {
+    transform: translateZ(0) !important;
+  }
+}
+
+@supports (-webkit-appearance:none) {
+  /* Chrome/Safari 特定修复 */
+  #quantum-circuit-svg foreignObject.gate-container {
+    will-change: transform !important;
+  }
+}
+
+/* 移除特定MUI组件的边框 */
+.MuiBox-root.mui-7pf6at,
+.MuiBox-root[class*="mui-7pf6at"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.mui-i4bv87-MuiSvgIcon-root,
+.MuiSvgIcon-root[class*="mui-i4bv87"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 更通用的选择器，确保覆盖所有可能的场景 */
+[class*="mui-7pf6at"],
+[class*="mui-i4bv87"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 使用更全面的属性选择器移除边框 */
+.MuiBox-root,
+.MuiSvgIcon-root,
+[class*="MuiBox"],
+[class*="MuiSvgIcon"] {
+  border: none !important;
+}
+
+/* 确保图标和容器没有不必要的外边框和轮廓 */
+button .MuiSvgIcon-root,
+.MuiIconButton-root .MuiSvgIcon-root {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 移除Material UI动态生成的类名组件的边框 */
+div[class^="mui-"],
+span[class^="mui-"],
+svg[class^="mui-"] {
+  border: none !important;
+}
+
+/* 专门针对"量子算法模板"区域的边框移除 */
+.algorithm-templates-paper .MuiBox-root.mui-7pf6at,
+.algorithm-templates-paper .MuiBox-root[class*="mui-7pf6at"],
+.algorithm-templates-paper [class*="mui-7pf6at"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.algorithm-templates-paper .MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.mui-i4bv87-MuiSvgIcon-root,
+.algorithm-templates-paper .MuiSvgIcon-root[class*="mui-i4bv87"],
+.algorithm-templates-paper [class*="mui-i4bv87"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 更精确的选择器，针对算法展开区域的所有Box和图标组件 */
+.algorithm-templates-paper .MuiAccordionDetails-root .MuiBox-root,
+.algorithm-templates-paper .MuiAccordionDetails-root [class*="MuiBox"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.algorithm-templates-paper .MuiAccordionDetails-root .MuiSvgIcon-root,
+.algorithm-templates-paper .MuiAccordionDetails-root [class*="MuiSvgIcon"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 极端情况下使用!important覆盖所有可能的边框 */
+.algorithm-templates-paper * {
+  border: none !important;
+}
+
+/* 使用属性选择器覆盖所有可能的边框和轮廓 */
+.algorithm-templates-paper [style*="border"],
+.algorithm-templates-paper div[style],
+.algorithm-templates-paper svg[style] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 确保展开后的算法内容不显示边框 */
+.algorithm-templates-paper .MuiAccordionDetails-root {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.algorithm-templates-paper .MuiAccordionDetails-root > * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 针对算法展开视图中的电路图区域 */
+.algorithm-templates-paper .MuiAccordionDetails-root svg,
+.algorithm-templates-paper .MuiAccordionDetails-root svg * {
+  border: none !important;
+  outline: none !important;
+}
+
+/* 直接覆盖MuiAccordion内的所有元素边框 */
+.MuiAccordion-root .MuiBox-root,
+.MuiAccordion-root .MuiTypography-root,
+.MuiAccordion-root .MuiSvgIcon-root,
+.MuiAccordion-root div,
+.MuiAccordion-root span,
+.MuiAccordion-root svg {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 添加!important标记到每个可能的CSS属性 */
+.algorithm-templates-paper * {
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: inherit !important;
+  box-shadow: none !important;
 }

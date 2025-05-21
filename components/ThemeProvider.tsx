@@ -110,6 +110,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
           MuiCssBaseline: {
             styleOverrides: {
               body: {
+                /*
                 scrollbarColor:
                   mode === "light" ? "#bfbfbf #f5f5f5" : "#6b6b6b #2b2b2b",
                 "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
@@ -134,6 +135,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
                   {
                     backgroundColor: mode === "light" ? "#999999" : "#848484",
                   },
+                */
               },
             },
           },
