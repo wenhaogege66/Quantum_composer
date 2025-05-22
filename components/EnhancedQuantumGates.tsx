@@ -207,18 +207,21 @@ const GateButton: React.FC<IGateButtonProps> = ({ gate, onGateSelect }) => {
   // 处理拖动开始
   const handleDragStart = (e: React.DragEvent<HTMLButtonElement>) => {
     // 设置拖动数据
-    e.dataTransfer.setData("application/quantum-gate", JSON.stringify({
-      gateType: gate.symbol,
-      gateInfo: gate
-    }));
-    
+    e.dataTransfer.setData(
+      "application/quantum-gate",
+      JSON.stringify({
+        gateType: gate.symbol,
+        gateInfo: gate,
+      })
+    );
+
     // 设置拖动图像
     const img = new Image();
     img.src = gate.image.src;
     e.dataTransfer.setDragImage(img, 15, 15);
-    
+
     // 设置允许的拖放效果
-    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.effectAllowed = "copy";
   };
 
   return (
@@ -313,7 +316,7 @@ const EnhancedQuantumGates: React.FC<EnhancedQuantumGatesProps> = ({
 
     // 初始化参数
     if (gate.hasParams && gate.paramNames && gate.paramDefaults) {
-      const initialParams = {};
+      const initialParams: Record<string, any> = {};
       gate.paramNames.forEach((paramName) => {
         initialParams[paramName] = gate.paramDefaults[paramName] || "";
       });

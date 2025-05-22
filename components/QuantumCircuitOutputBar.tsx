@@ -114,7 +114,7 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({
         .range([height, 0])
         .domain([
           0,
-          Math.max(1, d3.max(quantumStates, (d) => d.probability) * 1.1),
+          Math.max(1, (d3.max(quantumStates, (d) => d.probability) || 0) * 1.1),
         ]); // 略微提高上限以便有空间
 
       // 自适应柱状图宽度计算
@@ -139,7 +139,7 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({
         .attr("width", barWidth)
         .attr("y", (d) => yScale(d.probability))
         .attr("height", (d) => height - yScale(d.probability))
-        .attr("fill", d3.rgb(100, 140, 240))
+        .attr("fill", "rgb(100, 140, 240)")
         .attr("rx", 2) // 圆角效果
         .attr("ry", 2);
 
@@ -168,16 +168,18 @@ const QuantumCircuitOutputBar: React.FC<Props> = ({
             "font-size",
             `${Math.min(12, Math.max(8, 20 - totalBars / 2))}px`
           ) // 动态调整字体大小
-          .text((d, i) => (i % skipFactor === 0 ? binaryToHex(d, 4) : ""))
+          .text((d: any, i) =>
+            i % skipFactor === 0 ? binaryToHex(String(d), 4) : ""
+          )
           .append("title")
-          .text((d) => d); // 添加鼠标悬停提示
+          .text((d: any) => String(d)); // 添加鼠标悬停提示
       } else {
         xAxis
           .selectAll(".tick text")
           .style("font-size", "12px")
-          .text((d) => binaryToHex(d, 4))
+          .text((d: any) => binaryToHex(String(d), 4))
           .append("title")
-          .text((d) => d);
+          .text((d: any) => String(d));
       }
 
       // 添加y轴，并减少刻度数量
